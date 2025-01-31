@@ -1,6 +1,6 @@
 //
 //modified by: Christian Rodriguez
-//date: 1/28/25		 Spring 2025
+//date: 1/31/25		 Spring 2025
 //
 //original author: Gordon Griesel
 //date:            Fall 2024
@@ -24,6 +24,8 @@ using namespace std;
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <GL/glx.h>
+
+#include "fonts.h"
 
 //some structures
 
@@ -119,6 +121,7 @@ int main()
 		x11.swapBuffers();
 		usleep(200);
 	}
+    cleanup_fonts();
 	return 0;
 }
 
@@ -162,7 +165,7 @@ void X11_wrapper::set_title()
 {
 	//Set the window title bar.
 	XMapWindow(dpy, win);
-	XStoreName(dpy, win, "3350 Lab-1");
+	XStoreName(dpy, win, "3350 Lab-2");
 }
 
 bool X11_wrapper::getXPending()
@@ -294,13 +297,20 @@ void init_opengl(void)
 	
     //Set 2D mode (no perspective)
 	glOrtho(0, g.xres, 0, g.yres, -1, 1);
-	
+
+
+    //
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 	
     //Set the screen background color
 	glClearColor(0.3, 0.1, 0.1, 1.0);
 	// Original values: (r)0.1, (g)0.1, (b)0.1, (transparency?)1.0
+    
+    
+    //Do this to allow fonts
+    glEnable(GL_TEXTURE_2D);
+    initialize_fonts();
 }
 
 void physics()
@@ -406,4 +416,19 @@ void render()
 		glVertex2f( g.w, -g.w);
 	glEnd();
 	glPopMatrix();
+
+        Rect r;
+
+    //
+    r.bot = g.yres - 20;
+    r.left = 10;
+    r.center = 0;
+
+    ggprint8b(&r, 16, 0x00ff0000, "3350 lab-2");
+    ggprint8b(&r, 16, 0x00ff0000, "Esc to exit");
+    ggprint8b(&r, 16, 0x00ff0000, "W to speed up");
+    ggprint8b(&r, 16, 0x00ff0000, "S to slow down");
+
+        
+
 }
